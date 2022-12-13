@@ -99,6 +99,40 @@ public:
         }
     }
 
+    Node *Search(Node *par, char *cstring, int ind) {
+
+        int len = -1;
+        if (cstring[ind] == s[par->ost]) {
+            len = 0;
+            while (cstring[ind + len] == s[par->ost + len] and
+                   ind + len < strlen(cstring) and
+                   par->ost + len <= par->ost + par->len)
+                len++;
+        }
+        if (len == -1 || len + ind >= sz)return nullptr;
+        else if (ind + len == strlen(cstring))return par;
+        else {
+            for (int i = 0; i < par->lastIndex; i++) {
+                return Search(par->children[i], cstring, ind + len);
+            }
+        }
+    }
+
+    void DFS(Node *node) {
+        if (node->tst != -1)std::cout << node->tst << '\n';
+        for (int i = 0; i < node->lastIndex; i++) {
+            DFS(node->children[i]);
+        }
+    }
+
+    void Search(char *cstring) {
+        for (int i = 0; i < root->lastIndex; i++) {
+            Node *node = Search(root->children[i], cstring, 0);
+            if (node != nullptr)DFS(node);
+        }
+
+    }
+
     void print() {
 
         for (int i = 0; i < root->lastIndex; i++) {
@@ -113,6 +147,7 @@ int main() {
 
     SuffixTree t("banana$");
     t.print();
+    t.Search("ana");
 
 
     return 0;
