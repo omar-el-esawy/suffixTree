@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 
+
 struct Node {
     int ost;
     int len;
@@ -41,7 +42,7 @@ public:
         this->s = string;
         sz = strlen(string);
         root = new Node(0, sz, 0);
-
+        root->add(new Node(sz - 1, 1, sz - 1));
         build();
     }
 
@@ -50,42 +51,9 @@ public:
             build(root, i);
     }
 
-    void buildd() {
-        for (int i = 0; i < sz; i++) {
-
-            Node *node = new Node(i, sz - i, i);
-            int len = -1;
-            Node *cnode;
-            auto &rchld = root->children;
-            int index;
-            for (int j = 0; j < root->lastIndex; j++) {
-                if (s[i] == s[rchld[j]->ost]) {
-                    len = 1;
-                    cnode = rchld[j];
-                    while (s[i + len] == s[rchld[j]->ost + len] and i + len < sz) {
-                        std::cout << len << '\n';
-                        len++;
-                    }
-                    len++;
-                    index = j;
-                    break;
-                }
-            }
-            if (len == -1)root->add(node);
-            else {
-                Node *par = new Node(cnode->ost, len, -1);
-                Node *chl1 = new Node(i + len, sz - (i + len), i);
-                Node *chl2 = new Node(cnode->ost + len, sz - (cnode->ost + len), cnode->ost);
-                par->add(chl1);
-                par->add(chl2);
-                root->add(par, index);
-                delete cnode;
-            }
-        }
-    }
 
     void build(Node *par, int ind) {
-        if (ind == sz) return;
+        if (ind == sz - 1) return;
 
         int len = -1;
         int ls = 0;
@@ -95,7 +63,7 @@ public:
                 len = 0;
                 ls = i;
                 opar = par->children[i];
-                while (s[ind + len] == s[par->children[i]->ost + len] and i + len < sz )len++;
+                while (s[ind + len] == s[par->children[i]->ost + len] and i + len < sz)len++;
             }
         }
         if (len == -1) {
@@ -109,6 +77,7 @@ public:
         if (opar->lastIndex != 0) {
             lead = new Node(opar->ost + len, opar->len - len, -1);
             lead->children = opar->children;
+            lead->lastIndex = opar->lastIndex;
         } else
             lead = new Node(opar->ost + len, opar->len - len, opar->tst);
         npar->add(child);
@@ -119,13 +88,24 @@ public:
     }
 
 
-    void print() {
+    void print(Node *root) {
+        for (int j = root->ost; j < root->len + root->ost; j++) {
+            std::cout << s[j];
+        }
+        std::cout << '\n';
         auto &children = root->children;
         for (int i = 0; i < root->lastIndex; i++) {
-            std::cout << children[i]->ost << ' ' << children[i]->len << ' ' << children[i]->tst << '\n';
+            print(children[i]);
         }
     }
 
+    void print() {
+
+        for (int i = 0; i < root->lastIndex; i++) {
+            print(root->children[i]);
+            std::cout << "TT\n";
+        }
+    }
 
 };
 
